@@ -44,9 +44,6 @@ public class MortgageController {
 	@FXML
 	private Label lblMortgagePayment;
 	
-	@FXML
-	private Label PMT;
-	
 	private MainApp mainApp;
 	
 	private ObservableList<Integer> years = FXCollections.observableArrayList(15, 30);
@@ -64,7 +61,6 @@ public class MortgageController {
 	@FXML
 	public void btnCalculatePayment(ActionEvent event) throws RateException
 	{
-		Action action = new Action(eAction.CalculatePayment);
 		
 		LoanRequest lq = new LoanRequest();
 		lq.setIncome(Double.parseDouble((txtIncome.getText())));
@@ -72,8 +68,6 @@ public class MortgageController {
 		lq.setExpenses(Double.parseDouble(txtExpenses.getText()));
 		lq.setiTerm(Integer.parseInt(cmbTerm.getPromptText()));
 		lq.setdRate(RateBLL.getRate(Integer.parseInt(txtCreditScore.getText())));
-		HandleLoanRequestDetails(lq);
-		PMT.setText(String.valueOf(RateBLL.getPayment(lq.getdRate(), lq.getiTerm(), Integer.parseInt(txtHouseCost.getText()), Integer.parseInt(txtDownPayment.getText()), false)));
 		
 		mainApp.messageSend(lq);
 		
@@ -81,11 +75,6 @@ public class MortgageController {
 	
 	public void HandleLoanRequestDetails(LoanRequest lRequest)
 	{
-		//	TODO - RocketClient.HandleLoanRequestDetails
-		//			lRequest is an instance of LoanRequest.
-		//			after it's returned back from the server, the payment (dPayment)
-		//			should be calculated.
-		//			Display dPayment on the form, rounded to two decimal places
 		
 		NumberFormat formatter = new DecimalFormat("#0.00");
 		
