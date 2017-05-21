@@ -31,7 +31,6 @@ public class RateBLL {
 			throw new RateException(rates.get(0));
 		}
 		
-		
 		return dInterestRate;
 		
 		

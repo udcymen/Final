@@ -4,6 +4,7 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 
 import eNums.eAction;
+import exceptions.RateException;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -16,6 +17,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextInputControl;
 import rocket.app.MainApp;
+import rocketBase.RateBLL;
 import rocketCode.Action;
 import rocketData.LoanRequest;
 
@@ -29,6 +31,9 @@ public class MortgageController {
 
 	@FXML
 	private TextField txtCreditScore;
+	
+	@FXML 
+	private TextField txtDownPayment;
 
 	@FXML
 	private TextField txtHouseCost;
@@ -39,26 +44,39 @@ public class MortgageController {
 	@FXML
 	private Label lblMortgagePayment;
 	
-	private TextField txtNew;
+	@FXML
+	private Label PMT;
 	
 	private MainApp mainApp;
+	
+	private ObservableList<Integer> years = FXCollections.observableArrayList(15, 30);
 
 	public void setMainApp(MainApp mainApp) {
 		this.mainApp = mainApp;
 	}
 	
 	@FXML
-	public void btnCalculatePayment(ActionEvent event)
+	private void initialize()
 	{
-		Alert alert = new Alert(AlertType.INFORMATION);
-		alert.setTitle("Message Here...");
-		alert.setHeaderText("Look, an Information Dialog");
-		alert.setContentText(txtNew.getText());
-		alert.showAndWait().ifPresent(rs -> {
-		    if (rs == ButtonType.OK) {
-		        System.out.println("Pressed OK.");
-		    }
-		});
+		cmbTerm.setItems(years);
+	}
+	
+	@FXML
+	public void btnCalculatePayment(ActionEvent event) throws RateException
+	{
+		Action action = new Action(eAction.CalculatePayment);
+		
+		LoanRequest lq = new LoanRequest();
+		lq.setIncome(Double.parseDouble((txtIncome.getText())));
+		lq.setiCreditScore(Integer.parseInt(txtCreditScore.getText()));
+		lq.setExpenses(Double.parseDouble(txtExpenses.getText()));
+		lq.setiTerm(Integer.parseInt(cmbTerm.getPromptText()));
+		lq.setdRate(RateBLL.getRate(Integer.parseInt(txtCreditScore.getText())));
+		HandleLoanRequestDetails(lq);
+		PMT.setText(String.valueOf(RateBLL.getPayment(lq.getdRate(), lq.getiTerm(), Integer.parseInt(txtHouseCost.getText()), Integer.parseInt(txtDownPayment.getText()), false)));
+		
+		mainApp.messageSend(lq);
+		
 	}
 	
 	public void HandleLoanRequestDetails(LoanRequest lRequest)
